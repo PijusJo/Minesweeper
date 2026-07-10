@@ -1,17 +1,17 @@
 ﻿using System.Windows.Controls;
 using Minesweeper.ViewModel;
 
-namespace Minesweeper.View
+namespace Minesweeper.View.UserControls 
 {
     /// <summary>
     /// Interaction logic for Board.xaml
     /// </summary>
-    public partial class Board : UserControl
+    public partial class BoardView : UserControl
     {
-        public Board()
+        public BoardView()
         {
             InitializeComponent();
-            BoardViewModel vm = new BoardViewModel();
+            BoardViewModel vm = new BoardViewModel(5, 5, 3);
             DataContext = vm;
         }
     }
