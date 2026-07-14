@@ -9,6 +9,7 @@ namespace Minesweeper.ViewModel
 {
     public class BoardViewModel : ViewModelBase
     {
+        private MainViewModel _MainVM;
         private bool hasBeenStarted {  get; set; }
         public bool HasBeenStarted 
         {
@@ -32,11 +33,41 @@ namespace Minesweeper.ViewModel
 
         public Board GameBoard { get; set; }
 
-        //number of locations flagged, need to be equal 
-        public int Flaggednumber { get; set; }
+        //number of mines yet to be flagged, DOESN'T check if flagged location is actually a mine
 
-        public int UnrevealedLocations {  get; set; }
+        private int unFlaggedMines {  get; set; }
+        public int UnFlaggedMines 
+        {
+            get
+            {
+                return unFlaggedMines;
+            }
+
+            set
+            {
+                unFlaggedMines = value;
+                OnPropertyChanged();
+            } 
         
+        }
+
+        private int unrevealedLocations { get; set; }
+
+        public int UnrevealedLocations
+        {
+            get
+            {
+                return unrevealedLocations;
+            }
+
+            set
+            {
+                unrevealedLocations = value;
+                OnPropertyChanged();
+            }
+
+        }
+
         private LocationViewModel[,] cells { get; set; }
         public LocationViewModel[,] Cells
         {
@@ -54,11 +85,12 @@ namespace Minesweeper.ViewModel
         }
 
         public IEnumerable<LocationViewModel> FlattenedCells => Cells.Cast<LocationViewModel>();
-        public BoardViewModel(int columns = 5, int rows = 5, int numOfMines = 2)
+        public BoardViewModel(MainViewModel MainVM, int rows = 10, int columns = 10, int numOfMines = 20)
         {
             Columns = columns;
             Rows = rows;
             NumOfMines = numOfMines;
+            _MainVM = MainVM;
             GameBoard = new Board(Rows, Columns, NumOfMines);
             cells = new LocationViewModel[Rows,Columns];
             for (int x = 0; x < Rows; x++)
@@ -68,12 +100,12 @@ namespace Minesweeper.ViewModel
                 } 
             HasBeenStarted = false;
 
-            Flaggednumber = 0;
+            UnFlaggedMines = NumOfMines;
             UnrevealedLocations = Rows*Columns - NumOfMines;
         }
         public void UpdateLocation(int XCoord, int YCoord)
         {
-            if (!GameBoard.Minefield[XCoord, YCoord].HasBeenRevealed)
+            if (!GameBoard.Minefield[XCoord, YCoord].HasBeenRevealed && !GameBoard.Minefield[XCoord, YCoord].MarkedAsMine)
             {
                 UnrevealedLocations--;
                 GameBoard.Minefield[XCoord, YCoord].HasBeenRevealed = true;
@@ -94,6 +126,7 @@ namespace Minesweeper.ViewModel
             if (!hasBeenStarted)
             {
                 GenerateBoard(x, y);
+                _MainVM.SetBoardNoCustomSettings();
                 hasBeenStarted = true;
             }
             if (GameBoard.Minefield[x, y].IsAMine)
@@ -104,17 +137,35 @@ namespace Minesweeper.ViewModel
                     cells[GameBoard.XCoordOfMines[i], GameBoard.YCoordOfMines[i]].Reveal();
                 }
                 MessageBox.Show("BOOOOOOOOOOOOOOM!!!!!", "YOU DIED", MessageBoxButton.OK, MessageBoxImage.Error);
+                _MainVM.BackToSettings();
             }
-            UpdateLocation(x, y);
+            if(!CheckVictory())
+                UpdateLocation(x, y);
         }
 
-
-        public void CheckVictory()
+        public void CheckNeighbours3X3(int X, int Y)
         {
-            if (Flaggednumber==GameBoard.NumberOfMines && UnrevealedLocations==0)
+            int MarkedNeighbours = 0;
+            for (int x = Math.Max(0, X - 1); x < Math.Min(GameBoard.Xsize, X + 2); x++)
+                for (int y = Math.Max(0, Y - 1); y < Math.Min(GameBoard.Ysize, Y + 2); y++)
+                    if(GameBoard.Minefield[x, y].MarkedAsMine)
+                        MarkedNeighbours++;
+            if (MarkedNeighbours == GameBoard.Minefield[X, Y].NearbyMines && MarkedNeighbours>0)
+                for (int x = Math.Max(0, X - 1); x < Math.Min(GameBoard.Xsize, X + 2); x++)
+                    for (int y = Math.Max(0, Y - 1); y < Math.Min(GameBoard.Ysize, Y + 2); y++)
+                        if (!GameBoard.Minefield[x, y].HasBeenRevealed && !GameBoard.Minefield[x, y].MarkedAsMine)
+                            CheckLocation(x, y);
+
+        }
+
+        public bool CheckVictory()
+        {
+            if (UnFlaggedMines==0 && UnrevealedLocations==0)
             {
                 MessageBox.Show("YAYYYYYYYYYYYYYYYYYYYYYYY YOU WON !!!!", "Victory!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return true;
             }
+            return false;
         }
 
 
@@ -125,22 +176,17 @@ namespace Minesweeper.ViewModel
                 if (!GameBoard.Minefield[x, y].MarkedAsMine)
                 {
                     GameBoard.Minefield[x, y].MarkedAsMine = true;
-                    Flaggednumber++;
+                    UnFlaggedMines--;
                     CheckVictory();
                 }
                 else
                 {
                     GameBoard.Minefield[x, y].MarkedAsMine = false;
-                    Flaggednumber--;
+                    UnFlaggedMines++;
                 }
             }
         }
         
-        public void FirstReveal(int x, int y)
-        {
-            GenerateBoard(x, y);
-            UpdateLocation(x,y);
-        }
         //This function generates the board AFTER the first click, ensuring that the clicked location is not a mine and has no neighboring mines
         public void GenerateBoard(int StartXCoord, int StartYCoord)
         {

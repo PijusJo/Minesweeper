@@ -70,7 +70,7 @@ namespace Minesweeper.ViewModel
         }
 
 
-        public RelayCommand LeftClickCommand => new RelayCommand(exceute => LeftClick(), canExecute => !currentlocation.HasBeenRevealed && !Marked);
+        public RelayCommand LeftClickCommand => new RelayCommand(exceute => LeftClick(), canExecute => !Marked);
         public RelayCommand RightClickCommand => new RelayCommand(exceute => RightClick(), canExecute => !currentlocation.HasBeenRevealed);
 
         public LocationViewModel(BoardViewModel board, Location location)
@@ -86,8 +86,17 @@ namespace Minesweeper.ViewModel
         }
         private void LeftClick()
         {
-            if(!currentlocation.HasBeenRevealed && !Marked)
-                _board.CheckLocation(currentlocation.Xcoord, currentlocation.Ycoord);
+            if (!Marked)
+            {
+                if (!currentlocation.HasBeenRevealed)
+                    _board.CheckLocation(currentlocation.Xcoord, currentlocation.Ycoord);
+                else
+                {
+                    _board.CheckNeighbours3X3(currentlocation.Xcoord, currentlocation.Ycoord);
+                }
+            }
+            
+
         }
         private void RightClick()
         {

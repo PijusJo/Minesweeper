@@ -9,14 +9,14 @@ namespace Minesweeper.Model
             Xsize = xSize;
             Ysize = ySize;
             NumberOfMines = numOfMiness;
-            Minefield = new Location[Ysize, Xsize];
+            Minefield = new Location[Xsize, Ysize];
 
             for (int x = 0; x < Xsize; x++)
             {
                 for (int y = 0; y < Ysize; y++)
                 {
                     Minefield[x, y] = new Location(x, y);
-                }
+                 }
             }
             XCoordOfMines = new int[numOfMiness];
             YCoordOfMines = new int[numOfMiness];
