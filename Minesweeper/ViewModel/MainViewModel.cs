@@ -106,22 +106,22 @@ namespace Minesweeper.ViewModel
             Mines = 20;
             BoardVM = new BoardViewModel(this, Rows, Columns, Mines);
             BoardIsSet = false;
-            BoardSettingsRowSize = "1*";
-            GameStatsRowSize = "0*";
+            BoardSettingsRowSize = "100";
+            GameStatsRowSize = "0";
         }
 
         public void SetBoard ()
         {
             BoardIsSet = true;
             BoardVM = new BoardViewModel(this, Rows, Columns, Mines);
-            BoardSettingsRowSize = "0*";
-            GameStatsRowSize = "1*";
+            BoardSettingsRowSize = "0";
+            GameStatsRowSize = "100";
         }
         public void SetBoardNoCustomSettings()
         {
             BoardIsSet = true;
-            BoardSettingsRowSize = "0*";
-            GameStatsRowSize = "1*";
+            BoardSettingsRowSize = "0";
+            GameStatsRowSize = "100";
         }
 
         public void BackToSettings()
@@ -131,7 +131,7 @@ namespace Minesweeper.ViewModel
             Mines = 20;
             BoardVM = new BoardViewModel(this, Rows, Columns, Mines);
             BoardIsSet = false;
-            BoardSettingsRowSize = "1*";
+            BoardSettingsRowSize = "100";
             GameStatsRowSize = "0*";
         }
 

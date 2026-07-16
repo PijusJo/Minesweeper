@@ -8,4 +8,12 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Images\Flag.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\Flag.png" />
+  </ItemGroup>
+
 </Project>

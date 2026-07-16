@@ -69,6 +69,32 @@ namespace Minesweeper.ViewModel
             }  
         }
 
+        private int flagOpacity;
+        public int FlagOpacity
+        {
+            get
+            {
+                return flagOpacity;
+            }
+            set {
+                flagOpacity = value;
+                OnPropertyChanged();
+                }
+        }
+
+        private int size;
+        public int Size
+        {
+            get 
+            { 
+                return size;
+            }
+            set
+            {
+                size = value;
+                OnPropertyChanged();
+            }
+        }
 
         public RelayCommand LeftClickCommand => new RelayCommand(exceute => LeftClick(), canExecute => !Marked);
         public RelayCommand RightClickCommand => new RelayCommand(exceute => RightClick(), canExecute => !currentlocation.HasBeenRevealed);
@@ -82,6 +108,7 @@ namespace Minesweeper.ViewModel
             Colour = "Gray";
             Marked = false;
             BtnText = "";
+            FlagOpacity = 0;
 
         }
         private void LeftClick()
@@ -127,13 +154,13 @@ namespace Minesweeper.ViewModel
         {
             if (Marked)
             {
-                BtnText = "";
+                FlagOpacity = 0;
                 Marked = false;
                 //Colour = "Gray";
             }
             else
             {
-                BtnText = "X";
+                FlagOpacity = 100;
                 Marked = true;
                 //Colour = "White";
             }

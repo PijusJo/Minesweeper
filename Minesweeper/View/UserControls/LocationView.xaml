@@ -9,13 +9,15 @@
     <Grid Background="White" >
         <Border BorderBrush="Black" BorderThickness="1"/>
         <TextBlock Text="{Binding Text}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20"/>
-        <Button Background="{Binding Colour}" Margin="2,2,2,2" Opacity="{Binding Opacity}" >
+        <Button Background="{Binding Colour}" Margin="2" Opacity="{Binding Opacity}" >
             <Button.InputBindings>
                 <MouseBinding MouseAction="LeftClick" Command="{Binding LeftClickCommand}"/>
                 <MouseBinding MouseAction="RightClick" Command="{Binding RightClickCommand}"/>
+                
             </Button.InputBindings>
-            <TextBlock Text="{Binding BtnText}" FontSize="20" Foreground="Red" Margin="0,-5,0,0"/>
+            <Image Source="/Images/Flag.png" Opacity="{Binding FlagOpacity}" Margin="-1"/>
         </Button>
+        
     </Grid>
 
 </UserControl>
