@@ -12,4 +12,15 @@ namespace Minesweeper.MVVM
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+    public class CellSizeChangedEventArgs : EventArgs
+    {
+        public int NewCellSize { get;}
+
+        public CellSizeChangedEventArgs ( int newCellSize)
+        {
+            NewCellSize = newCellSize;
+        }
+    }
+
 }

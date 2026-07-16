@@ -9,7 +9,7 @@ namespace Minesweeper.ViewModel
 {
     public class BoardViewModel : ViewModelBase
     {
-        private MainViewModel _MainVM;
+        public MainViewModel _MainVM;
         private bool hasBeenStarted {  get; set; }
         public bool HasBeenStarted 
         {
@@ -85,7 +85,7 @@ namespace Minesweeper.ViewModel
         }
 
         public IEnumerable<LocationViewModel> FlattenedCells => Cells.Cast<LocationViewModel>();
-        public BoardViewModel(MainViewModel MainVM, int rows = 10, int columns = 10, int numOfMines = 20)
+        public BoardViewModel(MainViewModel MainVM, int rows = 10, int columns = 10, int numOfMines = 20, int CellSize = 40)
         {
             Columns = columns;
             Rows = rows;
@@ -96,12 +96,16 @@ namespace Minesweeper.ViewModel
             for (int x = 0; x < Rows; x++)
                 for (int y = 0; y < Columns; y++)
                 {
-                    cells[x, y] = new LocationViewModel(this, GameBoard.Minefield[x, y]);
+                    cells[x, y] = new LocationViewModel(this, GameBoard.Minefield[x, y], CellSize);
                 } 
             HasBeenStarted = false;
 
             UnFlaggedMines = NumOfMines;
             UnrevealedLocations = Rows*Columns - NumOfMines;
+
+
+
+
         }
         public void UpdateLocation(int XCoord, int YCoord)
         {

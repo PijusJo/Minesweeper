@@ -13,7 +13,9 @@ namespace Minesweeper.ViewModel
 
         private string colour { get; set; }
 
-        //value, which sets the buttons background colour
+        /// <summary>
+        /// value, which sets the buttons background colour
+        /// </summary>
         public string Colour
         {
             get
@@ -96,20 +98,37 @@ namespace Minesweeper.ViewModel
             }
         }
 
+        private int fontSize;
+        public int FontSize
+        {
+            get
+            {
+                return fontSize;
+            }
+            set
+            {
+                fontSize = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand LeftClickCommand => new RelayCommand(exceute => LeftClick(), canExecute => !Marked);
         public RelayCommand RightClickCommand => new RelayCommand(exceute => RightClick(), canExecute => !currentlocation.HasBeenRevealed);
 
-        public LocationViewModel(BoardViewModel board, Location location)
+        public LocationViewModel(BoardViewModel board, Location location, int size = 40)
         {
             _board = board;
             currentlocation = location;
             Opacity = 100;
+            Size = size;
+            FontSize = (3*Size) / 4;
             Text = "";
             Colour = "Gray";
             Marked = false;
             BtnText = "";
             FlagOpacity = 0;
 
+            _board._MainVM.CellSizeChanged += UpdateCellSize;
         }
         private void LeftClick()
         {
@@ -143,7 +162,6 @@ namespace Minesweeper.ViewModel
                 {
                     Text= currentlocation.NearbyMines.ToString();
                 }
-
             }
             else
             {
@@ -156,16 +174,18 @@ namespace Minesweeper.ViewModel
             {
                 FlagOpacity = 0;
                 Marked = false;
-                //Colour = "Gray";
             }
             else
             {
                 FlagOpacity = 100;
                 Marked = true;
-                //Colour = "White";
             }
                 
         }
 
+        public void UpdateCellSize(object? sender, CellSizeChangedEventArgs e)
+        {
+            Size = e.NewCellSize;
+        }
     }
 }

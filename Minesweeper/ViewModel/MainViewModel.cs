@@ -8,6 +8,15 @@ namespace Minesweeper.ViewModel
         public RelayCommand GenerateBoardCommand => new RelayCommand(exceute => SetBoard(), canExecute => !BoardIsSet);
         public RelayCommand GoBackToSettingsCommand => new RelayCommand(exceute => BackToSettings(), canExecute => BoardIsSet);
 
+        public RelayCommand IncreaseCellSizeCommand => new RelayCommand(exceute => IncreaseCellSize(), canExecute => { return true; });
+        public RelayCommand DecreaseCellSizeCommand => new RelayCommand(exceute => DecreaseCellSize(), canExecute => CellSize>10);
+
+
+        public event EventHandler<CellSizeChangedEventArgs>? CellSizeChanged;
+
+        private int CellSize { get; set; }
+
+
         private BoardViewModel boardVM{  get; set; }
 
         public BoardViewModel BoardVM
@@ -28,7 +37,9 @@ namespace Minesweeper.ViewModel
         
         private string boardSettingsRowSize { get; set; }
 
-        //varaible used to turn on and off the settings row (row and column size, mine count)
+        /// <summary>
+        /// varaible used to turn on and off the settings row (row and column size, mine count)
+        /// </summary>
         public string BoardSettingsRowSize
         {
             get
@@ -44,7 +55,9 @@ namespace Minesweeper.ViewModel
 
         private string gameStatsRowSize { get; set; }
 
-        //varaible used to turn on and off the Game statistics row (unflagged mines count, locations left to be revealed) 
+        /// <summary>
+        /// varaible used to turn on and off the Game statistics row (unflagged mines count, locations left to be revealed) 
+        /// </summary>
         public string GameStatsRowSize
         {
             get
@@ -104,19 +117,24 @@ namespace Minesweeper.ViewModel
             Rows = 10;
             Columns = 10;
             Mines = 20;
-            BoardVM = new BoardViewModel(this, Rows, Columns, Mines);
+            CellSize = 40;
+            BoardVM = new BoardViewModel(this, Rows, Columns, Mines, CellSize);
             BoardIsSet = false;
             BoardSettingsRowSize = "100";
             GameStatsRowSize = "0";
+            
         }
 
         public void SetBoard ()
         {
             BoardIsSet = true;
-            BoardVM = new BoardViewModel(this, Rows, Columns, Mines);
+            BoardVM = new BoardViewModel(this, Rows, Columns, Mines, CellSize);
             BoardSettingsRowSize = "0";
             GameStatsRowSize = "100";
         }
+        /// <summary>
+        /// Sets the board to 10x10 with 20 mines
+        /// </summary>
         public void SetBoardNoCustomSettings()
         {
             BoardIsSet = true;
@@ -129,11 +147,28 @@ namespace Minesweeper.ViewModel
             Rows = 10;
             Columns = 10;
             Mines = 20;
-            BoardVM = new BoardViewModel(this, Rows, Columns, Mines);
+            BoardVM = new BoardViewModel(this, Rows, Columns, Mines, CellSize);
             BoardIsSet = false;
             BoardSettingsRowSize = "100";
             GameStatsRowSize = "0*";
         }
 
+        /// <summary>
+        /// Decreases current cell size by 5, if current size is not less than 10
+        /// </summary>
+        private void DecreaseCellSize()
+        {
+            if(CellSize > 10)
+            {
+                CellSize -=5;
+                CellSizeChanged.Invoke(this, new CellSizeChangedEventArgs(CellSize));
+            }
+        }
+        private void IncreaseCellSize()
+        {
+            
+            CellSize += 5;
+            CellSizeChanged.Invoke(this, new CellSizeChangedEventArgs(CellSize));
+        }
     }
 }
